@@ -1,0 +1,26 @@
+---
+# POST to Mistral chat completions — structured classification response
+http_interactions:
+  - request:
+      method: post
+      uri: https://api.mistral.ai/v1/chat/completions
+      body:
+        encoding: UTF-8
+        string: ""
+      headers:
+        Content-Type:
+          - application/json
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Content-Type:
+          - application/json; charset=UTF-8
+      body:
+        encoding: UTF-8
+        string: '{"id":"chat-abc123","object":"chat.completion","model":"mistral-medium-2508","choices":[{"index":0,"message":{"role":"assistant","content":"{\"results\":[{\"id\":\"msg_1\",\"tags\":[\"shipping\",\"receipt\"]},{\"id\":\"msg_2\",\"tags\":[\"work\",\"meeting\"]}]}","tool_calls":null},"finish_reason":"stop"}],"usage":{"prompt_tokens":150,"completion_tokens":60,"total_tokens":210}}'
+    recorded_at: "Thu, 05 Mar 2026 10:00:00 GMT"
+recorded_with: VCR 6.3.1

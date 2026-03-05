@@ -5,6 +5,7 @@
 # Ignore sensitive credentials
 credentials.json
 token.yaml
+.env
 
 # Ignore IDE files
 .idea/
@@ -20,3 +21,6 @@ Gemfile.lock
 .rspec_status
 coverage/
 spec/reports/
+tmp/
+
+interviews.md

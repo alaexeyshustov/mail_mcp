@@ -1,0 +1,24 @@
+---
+# UNREAD label with messagesTotal absent — exercises the `|| 0` fallback
+http_interactions:
+  - request:
+      method: get
+      uri: https://gmail.googleapis.com/gmail/v1/users/me/labels/UNREAD
+      body:
+        encoding: UTF-8
+        string: ""
+      headers:
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Content-Type:
+          - application/json; charset=UTF-8
+      body:
+        encoding: UTF-8
+        string: '{"id":"UNREAD","name":"UNREAD","type":"system"}'
+    recorded_at: "Fri, 20 Feb 2026 10:00:00 GMT"
+recorded_with: VCR 6.3.1

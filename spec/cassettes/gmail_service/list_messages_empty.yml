@@ -1,0 +1,24 @@
+---
+# Empty messages list — used for custom max_results / query tests
+http_interactions:
+  - request:
+      method: get
+      uri: https://gmail.googleapis.com/gmail/v1/users/me/messages
+      body:
+        encoding: UTF-8
+        string: ""
+      headers:
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Content-Type:
+          - application/json; charset=UTF-8
+      body:
+        encoding: UTF-8
+        string: '{"resultSizeEstimate":0}'
+    recorded_at: "Fri, 20 Feb 2026 10:00:00 GMT"
+recorded_with: VCR 6.3.1

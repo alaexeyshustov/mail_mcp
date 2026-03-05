@@ -1,0 +1,26 @@
+---
+# POST modify — 403 Forbidden, exercises error propagation
+http_interactions:
+  - request:
+      method: post
+      uri: https://gmail.googleapis.com/gmail/v1/users/me/messages/msg_123/modify
+      body:
+        encoding: UTF-8
+        string: '{"addLabelIds":["STARRED"],"removeLabelIds":[]}'
+      headers:
+        Content-Type:
+          - application/json
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 403
+        message: Forbidden
+      headers:
+        Content-Type:
+          - application/json; charset=UTF-8
+      body:
+        encoding: UTF-8
+        string: '{"error":{"code":403,"message":"Insufficient Permission","status":"PERMISSION_DENIED","errors":[{"message":"Insufficient Permission","domain":"googleapis.com","reason":"insufficientPermissions"}]}}'
+    recorded_at: "Fri, 20 Feb 2026 10:00:00 GMT"
+recorded_with: VCR 6.3.1

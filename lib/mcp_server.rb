@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'yaml'
+require 'dotenv/load'
 require 'fast_mcp'
 
 require_relative 'gmail_service'
@@ -9,16 +9,16 @@ require_relative 'tools/get_email'
 require_relative 'tools/search_emails'
 require_relative 'tools/get_labels'
 require_relative 'tools/get_unread_count'
-
-# Load configuration
-root = File.expand_path('../../', __FILE__)
-config = YAML.load_file(File.join(root, 'config.yml'))
+require_relative 'tools/add_labels'
+require_relative 'tools/classify_emails'
+require_relative 'email_classifier'
 
 # Initialize a single shared GmailService instance.
 # This avoids repeated OAuth initialization and keeps token refresh simple.
+root = File.expand_path('../../', __FILE__)
 gmail = GmailService.new(
-  credentials_path: File.join(root, config['credentials_path']),
-  token_path: File.join(root, config['token_path'])
+  credentials_path: File.join(root, ENV.fetch('CREDENTIALS_PATH', 'credentials.json')),
+  token_path: File.join(root, ENV.fetch('TOKEN_PATH', 'token.yaml'))
 )
 
 # Inject the shared service into each tool class
@@ -27,8 +27,14 @@ gmail = GmailService.new(
   Tools::GetEmail,
   Tools::SearchEmails,
   Tools::GetLabels,
-  Tools::GetUnreadCount
+  Tools::GetUnreadCount,
+  Tools::AddLabels
 ].each { |tool_class| tool_class.gmail_service = gmail }
+
+# Initialize the email classifier (uses Mistral via ruby_llm)
+Tools::ClassifyEmails.classifier = EmailClassifier.new(
+  api_key: ENV.fetch('MISTRAL_API_KEY', '')
+)
 
 # Create and configure the MCP server
 # FastMcp::Server creates a FastMcp::Logger by default which suppresses stdout
@@ -44,7 +50,9 @@ server.register_tools(
   Tools::GetEmail,
   Tools::SearchEmails,
   Tools::GetLabels,
-  Tools::GetUnreadCount
+  Tools::GetUnreadCount,
+  Tools::AddLabels,
+  Tools::ClassifyEmails
 )
 
 # Start the server using stdio transport (default for local MCP servers)

@@ -1,0 +1,24 @@
+---
+# Single full message — msg_123 with all headers and plain-text body
+http_interactions:
+  - request:
+      method: get
+      uri: https://gmail.googleapis.com/gmail/v1/users/me/messages/msg_123
+      body:
+        encoding: UTF-8
+        string: ""
+      headers:
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Content-Type:
+          - application/json; charset=UTF-8
+      body:
+        encoding: UTF-8
+        string: '{"id":"msg_123","threadId":"thread_msg_123","labelIds":["INBOX"],"snippet":"Test Subject - snippet","payload":{"mimeType":"text/plain","headers":[{"name":"Subject","value":"Test Subject"},{"name":"From","value":"sender@example.com"},{"name":"To","value":"recipient@example.com"},{"name":"Date","value":"Mon, 20 Feb 2026 10:00:00 +0000"}],"body":{"size":10,"data":"SGVsbG8gd29ybGQ="}}}'
+    recorded_at: "Fri, 20 Feb 2026 10:00:00 GMT"
+recorded_with: VCR 6.3.1

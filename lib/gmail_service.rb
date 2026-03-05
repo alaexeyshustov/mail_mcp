@@ -1,13 +1,13 @@
 require 'google/apis/gmail_v1'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
+require_relative 'gmail_auth'
 
 class GmailService
   attr_reader :service
 
-  OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'
   APPLICATION_NAME = 'Gmail MCP Server'
-  SCOPE = ['https://www.googleapis.com/auth/gmail.readonly'].freeze
+  SCOPE = ['https://www.googleapis.com/auth/gmail.modify'].freeze
 
   def initialize(credentials_path:, token_path:)
     @credentials_path = credentials_path
@@ -18,27 +18,14 @@ class GmailService
   end
 
   def authorize
-    client_id = Google::Auth::ClientId.from_file(@credentials_path)
-    token_store = Google::Auth::Stores::FileTokenStore.new(file: @token_path)
-    authorizer = Google::Auth::UserAuthorizer.new(client_id, SCOPE, token_store)
-    user_id = 'default'
-    credentials = authorizer.get_credentials(user_id)
-
-    if credentials.nil?
-      url = authorizer.get_authorization_url(base_url: OOB_URI)
-      $stderr.puts 'Open the following URL in the browser and enter the resulting code after authorization:'
-      $stderr.puts url
-      $stderr.print 'Code: '
-      code = $stdin.gets.chomp
-      credentials = authorizer.get_and_store_credentials_from_code(
-        user_id: user_id, code: code, base_url: OOB_URI
-      )
-    end
-
-    credentials
+    GmailAuth.new(
+      credentials_path: @credentials_path,
+      token_path: @token_path,
+      scope: SCOPE
+    ).credentials
   end
 
-  def list_messages(max_results: 100, query: nil, after_date: nil, before_date: nil, offset: 0)
+  def list_messages(max_results: 100, query: nil, after_date: nil, before_date: nil, offset: 0, label_ids: nil)
     date_filters = []
     date_filters << "after:#{after_date.strftime('%Y/%m/%d')}" if after_date
     date_filters << "before:#{before_date.strftime('%Y/%m/%d')}" if before_date
@@ -54,7 +41,7 @@ class GmailService
       remaining = offset - skipped
       # Fetch up to remaining+1 so we can tell if there are more results
       page_size = [remaining, 500].min
-      result = @service.list_user_messages('me', max_results: page_size, q: combined_query, page_token: page_token)
+      result = @service.list_user_messages('me', max_results: page_size, q: combined_query, label_ids: label_ids, page_token: page_token)
       fetched = (result.messages || []).size
       skipped += fetched
       page_token = result.next_page_token
@@ -63,7 +50,7 @@ class GmailService
       break if page_token.nil? || fetched < page_size
     end
 
-    result = @service.list_user_messages('me', max_results: max_results, q: combined_query, page_token: page_token)
+    result = @service.list_user_messages('me', max_results: max_results, q: combined_query, label_ids: label_ids, page_token: page_token)
     messages = result.messages || []
 
     messages.map do |message|
@@ -113,6 +100,17 @@ class GmailService
   def get_unread_count
     result = @service.get_user_label('me', 'UNREAD')
     result.messages_total || 0
+  end
+
+  def modify_labels(message_id, add_label_ids: [], remove_label_ids: [])
+    request = Google::Apis::GmailV1::ModifyMessageRequest.new(
+      add_label_ids: add_label_ids,
+      remove_label_ids: remove_label_ids
+    )
+    message = @service.modify_message('me', message_id, request)
+
+    # Return the updated label list so the caller gets immediate confirmation
+    { id: message.id, labels: message.label_ids || [] }
   end
 
   private

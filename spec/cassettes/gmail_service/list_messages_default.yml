@@ -1,0 +1,64 @@
+---
+# Three interactions: list page → get msg_1 → get msg_2
+http_interactions:
+- request:
+    method: get
+    uri: https://gmail.googleapis.com/gmail/v1/users/me/messages
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+    body:
+      encoding: UTF-8
+      string: '{"messages":[{"id":"msg_1","threadId":"thread_1"},{"id":"msg_2","threadId":"thread_2"}],"resultSizeEstimate":2}'
+  recorded_at: 'Fri, 20 Feb 2026 10:00:00 GMT'
+- request:
+    method: get
+    uri: https://gmail.googleapis.com/gmail/v1/users/me/messages/msg_1
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+    body:
+      encoding: UTF-8
+      string: '{"id":"msg_1","threadId":"thread_1","labelIds":["INBOX"],"snippet":"Hello - snippet","payload":{"mimeType":"text/plain","headers":[{"name":"Subject","value":"Hello"},{"name":"From","value":"sender@example.com"},{"name":"To","value":"recipient@example.com"},{"name":"Date","value":"Mon, 20 Feb 2026 10:00:00 +0000"}],"body":{"size":10,"data":"SGVsbG8gYm9keQ=="}}}'
+  recorded_at: 'Fri, 20 Feb 2026 10:00:00 GMT'
+- request:
+    method: get
+    uri: https://gmail.googleapis.com/gmail/v1/users/me/messages/msg_2
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+    body:
+      encoding: UTF-8
+      string: '{"id":"msg_2","threadId":"thread_2","labelIds":["INBOX"],"snippet":"World - snippet","payload":{"mimeType":"text/plain","headers":[{"name":"Subject","value":"World"},{"name":"From","value":"sender2@example.com"},{"name":"To","value":"recipient@example.com"},{"name":"Date","value":"Tue, 21 Feb 2026 10:00:00 +0000"}],"body":{"size":10,"data":"V29ybGQgYm9keQ=="}}}'
+  recorded_at: 'Fri, 20 Feb 2026 10:00:00 GMT'
+recorded_with: VCR 6.3.1

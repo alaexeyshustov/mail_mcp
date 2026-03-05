@@ -43,23 +43,16 @@ To make the server available in all projects, create or edit
 
 ## For VS Code
 
-Add to `.vscode/settings.json` or your user settings:
+Add to `.vscode/mcp.json` or your user settings:
 
 ```json
-{
-  "github.copilot.advanced": {
-    "mcp": {
       "servers": {
         "gmail": {
-          "command": "bundle",
-          "args": ["exec", "ruby", "mcp_server.rb"],
-          "cwd": "path",
+          "command": "./bin/cli",
+          "args": ["server"],
           "env": {}
         }
       }
-    }
-  }
-}
 ```
 
 ## Prerequisites

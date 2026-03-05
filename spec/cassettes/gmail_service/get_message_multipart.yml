@@ -1,0 +1,25 @@
+---
+# Multipart message — msg_multi — two text/plain parts
+# Base64: "Part 1" => UGFydCAx  "Part 2" => UGFydCAy
+http_interactions:
+  - request:
+      method: get
+      uri: https://gmail.googleapis.com/gmail/v1/users/me/messages/msg_multi
+      body:
+        encoding: UTF-8
+        string: ""
+      headers:
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Content-Type:
+          - application/json; charset=UTF-8
+      body:
+        encoding: UTF-8
+        string: '{"id":"msg_multi","threadId":"thread_multi","labelIds":["INBOX"],"snippet":"multipart snippet","payload":{"mimeType":"multipart/mixed","headers":[{"name":"Subject","value":"Multipart Test"},{"name":"From","value":"sender@example.com"},{"name":"To","value":"recipient@example.com"},{"name":"Date","value":"Mon, 20 Feb 2026 10:00:00 +0000"}],"body":{"size":0},"parts":[{"mimeType":"text/plain","body":{"size":6,"data":"UGFydCAx"},"parts":null},{"mimeType":"text/plain","body":{"size":6,"data":"UGFydCAy"},"parts":null}]}}'
+    recorded_at: "Fri, 20 Feb 2026 10:00:00 GMT"
+recorded_with: VCR 6.3.1

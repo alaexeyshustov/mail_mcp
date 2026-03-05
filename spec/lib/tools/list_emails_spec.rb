@@ -23,7 +23,9 @@ RSpec.describe Tools::ListEmails do
   describe '#call' do
     context 'with default arguments' do
       it 'calls list_messages with max_results: 10 and query: nil' do
-        expect(gmail).to receive(:list_messages).with(max_results: 10, query: nil).and_return([sample_email])
+        expect(gmail).to receive(:list_messages)
+          .with(max_results: 10, query: nil, after_date: nil, before_date: nil, offset: 0, label_ids: nil)
+          .and_return([sample_email])
         tool = described_class.new
         result = tool.call
         expect(result).to eq([sample_email])
@@ -32,7 +34,9 @@ RSpec.describe Tools::ListEmails do
 
     context 'with custom max_results' do
       it 'passes max_results to list_messages' do
-        expect(gmail).to receive(:list_messages).with(max_results: 5, query: nil).and_return([])
+        expect(gmail).to receive(:list_messages)
+          .with(max_results: 5, query: nil, after_date: nil, before_date: nil, offset: 0, label_ids: nil)
+          .and_return([])
         tool = described_class.new
         result = tool.call(max_results: 5)
         expect(result).to eq([])
@@ -41,7 +45,9 @@ RSpec.describe Tools::ListEmails do
 
     context 'with a query' do
       it 'passes the query to list_messages' do
-        expect(gmail).to receive(:list_messages).with(max_results: 10, query: 'is:unread').and_return([sample_email])
+        expect(gmail).to receive(:list_messages)
+          .with(max_results: 10, query: 'is:unread', after_date: nil, before_date: nil, offset: 0, label_ids: nil)
+          .and_return([sample_email])
         tool = described_class.new
         result = tool.call(query: 'is:unread')
         expect(result).to eq([sample_email])
@@ -50,10 +56,23 @@ RSpec.describe Tools::ListEmails do
 
     context 'with both max_results and query' do
       it 'passes both arguments to list_messages' do
-        expect(gmail).to receive(:list_messages).with(max_results: 20, query: 'from:boss@example.com').and_return([])
+        expect(gmail).to receive(:list_messages)
+          .with(max_results: 20, query: 'from:boss@example.com', after_date: nil, before_date: nil, offset: 0, label_ids: nil)
+          .and_return([])
         tool = described_class.new
         result = tool.call(max_results: 20, query: 'from:boss@example.com')
         expect(result).to eq([])
+      end
+    end
+
+    context 'with a label' do
+      it 'passes label_ids to list_messages' do
+        expect(gmail).to receive(:list_messages)
+          .with(max_results: 10, query: nil, after_date: nil, before_date: nil, offset: 0, label_ids: ['INBOX'])
+          .and_return([sample_email])
+        tool = described_class.new
+        result = tool.call(label: 'INBOX')
+        expect(result).to eq([sample_email])
       end
     end
 

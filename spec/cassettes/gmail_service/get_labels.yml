@@ -1,0 +1,24 @@
+---
+# All Gmail labels — system + one user label
+http_interactions:
+  - request:
+      method: get
+      uri: https://gmail.googleapis.com/gmail/v1/users/me/labels
+      body:
+        encoding: UTF-8
+        string: ""
+      headers:
+        Accept:
+          - "*/*"
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Content-Type:
+          - application/json; charset=UTF-8
+      body:
+        encoding: UTF-8
+        string: '{"labels":[{"id":"INBOX","name":"INBOX","type":"system","messageListVisibility":"hide","labelListVisibility":"labelShow"},{"id":"Label_1","name":"Work","type":"user","messageListVisibility":"show","labelListVisibility":"labelShow"}]}'
+    recorded_at: "Fri, 20 Feb 2026 10:00:00 GMT"
+recorded_with: VCR 6.3.1
